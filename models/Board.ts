@@ -1,8 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 const boardSchema = new mongoose.Schema(
   {
     title: String,
+    orgId: String,
+    imageId: String,
+    imageThumbUrl: String,
+    imageFullUrl: String,
+    imageLinkHTML: String,
+    imageUserName: String,
   },
   {
     timestamps: true,

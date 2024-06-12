@@ -40,7 +40,7 @@ export const getBoards = async () => {
 
   try {
     await dbConnect();
-    boards = await Board.find();
+    boards = await Board.find().sort({ createdAt: "desc" });
   } catch (error) {
     return {
       error: "Failed to fetch boards",

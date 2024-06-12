@@ -15,7 +15,6 @@ export const FormErrors = ({ id, errors }: FormErrorProps) => {
       className="mt-2 text-xs text-rose-500"
     >
       {errors?.[id]?.map((error) => {
-        console.log("FornError : ", error);
         return (
           <div
             key={error}
