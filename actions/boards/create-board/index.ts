@@ -36,7 +36,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   let board;
 
   try {
-    await dbConnect();
+    const mongoose = await dbConnect();
+
     board = await Board.create({
       title,
       orgId,

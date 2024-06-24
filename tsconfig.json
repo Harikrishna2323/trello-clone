@@ -21,6 +21,15 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "models/List.ts",
+    "models/Card.ts",
+    "models/Board.ts"
+  ],
   "exclude": ["node_modules"]
 }

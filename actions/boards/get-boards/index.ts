@@ -28,7 +28,7 @@ import { auth } from "@clerk/nextjs/server";
 // };
 
 export const getBoards = async () => {
-  const { userId } = auth();
+  const { userId, orgId } = auth();
 
   if (!userId) {
     return {
@@ -40,7 +40,7 @@ export const getBoards = async () => {
 
   try {
     await dbConnect();
-    boards = await Board.find().sort({ createdAt: "desc" });
+    boards = await Board.find().where({ orgId }).sort({ createdAt: "desc" });
   } catch (error) {
     return {
       error: "Failed to fetch boards",

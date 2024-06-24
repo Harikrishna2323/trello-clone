@@ -6,11 +6,11 @@ declare global {
   var mongoose: any; // This must be a `var` and not a `let / const`
 }
 
-if (!DATABASE_URL) {
-  throw new Error(
-    "Please define the DATABASE_URL environment variable inside .env.local"
-  );
-}
+// if (!DATABASE_URL) {
+//   throw new Error(
+//     "Please define the DATABASE_URL environment variable inside .env.local"
+//   );
+// }
 
 let cached = global.mongoose as any;
 
@@ -22,11 +22,8 @@ async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
   }
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-    cached.promise = mongoose.connect(DATABASE_URL!, opts).then((mongoose) => {
+  if (cached.conn == null) {
+    cached.promise = mongoose.connect(DATABASE_URL!).then((mongoose) => {
       console.log("Db connected");
       return mongoose;
     });
