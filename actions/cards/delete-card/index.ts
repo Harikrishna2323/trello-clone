@@ -8,6 +8,7 @@ import { InputType, ReturnType } from "./types";
 import { revalidatePath } from "next/cache";
 import dbConnect from "@/lib/mongodb";
 import Card from "@/models/Card";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -25,6 +26,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     await dbConnect();
 
     card = await Card.findByIdAndDelete(id);
+
+    if (card) {
+      await createAuditLog({
+        entityId: card._id,
+        entityTitle: card.title,
+        entityType: "CARD",
+        action: "DELETE",
+      });
+    }
   } catch (error) {
     console.log({ error });
     return {

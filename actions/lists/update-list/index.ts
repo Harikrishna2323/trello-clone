@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateListSchema } from "./schema";
 import List from "@/models/List";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -36,6 +37,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       { $set: { title } },
       { new: true } // to return the updated document
     );
+
+    if (list) {
+      await createAuditLog({
+        entityId: list._id,
+        entityTitle: list.title,
+        entityType: "LIST",
+        action: "UPDATE",
+      });
+    }
   } catch (error) {
     console.log({ error });
     return {

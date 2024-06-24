@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import { CardType, ListType } from "@/types";
 import Card from "@/models/Card";
 import { revalidatePath } from "next/cache";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -70,6 +71,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
           order: newOrder,
           cards: newCards,
         });
+
+        if (list) {
+          await createAuditLog({
+            entityId: list._id,
+            entityTitle: list.title,
+            entityType: "LIST",
+            action: "CREATE",
+          });
+        }
 
         await session.commitTransaction();
         session.endSession();

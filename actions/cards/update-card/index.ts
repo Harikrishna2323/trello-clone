@@ -8,6 +8,7 @@ import { InputType, ReturnType } from "./types";
 import { UpdateCardSchema } from "./schema";
 import dbConnect from "@/lib/mongodb";
 import { revalidatePath } from "next/cache";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -33,6 +34,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       { $set: { title: values.title, description: values.description } },
       { new: true }
     );
+
+    if (card) {
+      await createAuditLog({
+        entityId: card._id,
+        entityTitle: card.title,
+        entityType: "CARD",
+        action: "UPDATE",
+      });
+    }
   } catch (error) {
     return {
       error: "Failed to update",

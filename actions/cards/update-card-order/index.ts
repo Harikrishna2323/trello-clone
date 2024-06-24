@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import Card from "@/models/Card";
 import dbConnect from "@/lib/mongodb";
 import List from "@/models/List";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -45,7 +46,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     // Remove the card from the old list's cards array
     oldList = await List.findById(oldListId);
     if (oldList) {
-      oldList.cards = oldList.cards.filter((id) => !id.equals(cardId));
+      oldList.cards = oldList.cards.filter((id: any) => !id.equals(cardId));
       await oldList.save({ session });
     }
 
@@ -83,6 +84,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     console.log({ updatedCards });
     /////// ORDER UPDATION END ///////////
+
+    // if (updatedCards) {
+    //   await createAuditLog({
+    //     entityId: card._id,
+    //     entityTitle: card.title,
+    //     entityType: "CARD",
+    //     action: "CREATE",
+    //   });
+    // }
 
     await session.commitTransaction();
     session.endSession();

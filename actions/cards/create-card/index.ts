@@ -8,6 +8,7 @@ import { InputType, ReturnType } from "./types";
 import { CreateCardSchema } from "./schema";
 import List from "@/models/List";
 import Card from "@/models/Card";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -43,6 +44,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       list: listId,
       order: newOrder,
     });
+
+    if (card) {
+      await createAuditLog({
+        entityId: card._id,
+        entityTitle: card.title,
+        entityType: "CARD",
+        action: "CREATE",
+      });
+    }
   } catch (error) {
     return {
       error: "Failed to create",

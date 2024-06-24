@@ -32,3 +32,17 @@ type CardType = {
   listId: string;
   list?: ListType;
 };
+
+type AuditLogType = {
+  _id: string;
+  action: string;
+  entityId: string;
+  entityType: string;
+  entityTitle: string;
+  orgId: string;
+  userId: string;
+  userImage: string;
+  userName: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

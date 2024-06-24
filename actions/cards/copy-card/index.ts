@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import Card from "@/models/Card";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CopyCardSchema } from "./schema";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -44,6 +45,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       listId: cardToCopy.listId,
       list: cardToCopy.list,
     });
+
+    if (card) {
+      await createAuditLog({
+        entityId: card._id,
+        entityTitle: card.title,
+        entityType: "CARD",
+        action: "CREATE",
+      });
+    }
   } catch (error) {
     return {
       error: "Failed to copy card",

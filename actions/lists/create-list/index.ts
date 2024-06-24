@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateListSchema } from "./schema";
 import mongoose from "mongoose";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -48,6 +49,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
           board: boardId,
           order: newOrder,
         });
+
+        if (list) {
+          await createAuditLog({
+            entityId: list._id,
+            entityTitle: list.title,
+            entityType: "LIST",
+            action: "CREATE",
+          });
+        }
       });
     } catch (error) {
       await session.abortTransaction();

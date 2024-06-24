@@ -9,6 +9,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { DeleteListSchema } from "./schema";
 import mongoose from "mongoose";
 import Card from "@/models/Card";
+import { createAuditLog } from "@/lib/create-audit-log";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -48,10 +49,18 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     // DELETE associated Cards
     await Card.deleteMany({ _id: { $in: list.cards } }).session(session);
-
+    //?????????????? LOG FOR EACH DELETED CARD ???????????????
     // Delete the list
-    await List.findByIdAndDelete({ _id: id, boardId }).session(session);
+    list = await List.findByIdAndDelete({ _id: id, boardId }).session(session);
 
+    if (list) {
+      await createAuditLog({
+        entityId: list._id,
+        entityTitle: list.title,
+        entityType: "LIST",
+        action: "DELETE",
+      });
+    }
     await session.commitTransaction();
     session.endSession();
   } catch (error) {
