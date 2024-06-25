@@ -52,7 +52,6 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
 
   // DRAG END FUNCTIONALITY
   const onDragEnd = (result: any) => {
-    console.log({ result });
     const { destination, source, type, draggableId } = result;
 
     if (!destination) {

@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { DeleteBoardSchema } from "./schema";
 import { createAuditLog } from "@/lib/create-audit-log";
+import { decreaseAvailableCount } from "@/lib/org-limit";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -26,6 +27,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     board = await Board.findByIdAndDelete({ _id: id, orgId });
 
     if (board) {
+      await decreaseAvailableCount();
       await createAuditLog({
         entityId: board._id,
         entityTitle: board.title,

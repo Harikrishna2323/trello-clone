@@ -82,7 +82,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     updatedCards = await Promise.all(promises);
 
-    console.log({ updatedCards });
     /////// ORDER UPDATION END ///////////
 
     // if (updatedCards) {

@@ -27,7 +27,6 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
 
   const { execute: executeDelete } = useAction(deleteList, {
     onSuccess: (data) => {
-      console.log({ data });
       toast.message(`List "${data.title}" deleted`);
       closeRef?.current?.click();
     },

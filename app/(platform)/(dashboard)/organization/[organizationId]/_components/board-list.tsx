@@ -6,6 +6,9 @@ import { auth } from "@clerk/nextjs/server";
 import { HelpCircle, User2 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { MAX_FREE_BOARDS } from "@/constants/boards";
+import { getAvailableCount } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 export const BoardList = async () => {
   const { orgId } = auth();
@@ -13,6 +16,10 @@ export const BoardList = async () => {
   if (!orgId) return redirect("/select-org");
 
   const boards = await getBoards();
+
+  const availableCount = await getAvailableCount();
+
+  const isPro = await checkSubscription();
 
   return (
     <div className="space-y-4">
@@ -39,10 +46,14 @@ export const BoardList = async () => {
         <FormPopover sideOffset={10} side={"right"}>
           <div
             role="button"
-            className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 items-center justify-center hover:opacity-75 transition"
+            className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col  gap-y-1 items-center justify-center hover:opacity-75 transition"
           >
             <p className="text-sm">Create new board</p>
-            <span className="text-xs">5 remaning</span>
+            <span className="text-xs">
+              {isPro
+                ? "UNLIMITED"
+                : `${MAX_FREE_BOARDS - availableCount} remaning`}
+            </span>
             <Hint
               sideOffset={40}
               description="Free workspaces can have upto 5 open boards. For unlimited boards, updgrade this workspace"

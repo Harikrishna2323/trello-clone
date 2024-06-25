@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Info } from "../_components/info";
 import { ActivityList } from "./_components/activity-list";
 import { getAuditLogs } from "@/actions/auditLogs/get-audit-logs";
+import { checkSubscription } from "@/lib/subscription";
 
 const ActivityPage = async () => {
   const { orgId } = auth();
@@ -14,9 +15,11 @@ const ActivityPage = async () => {
 
   const auditLogs = await getAuditLogs({ orgId });
 
+  const isPro = await checkSubscription();
+
   return (
     <div className="w-full">
-      <Info />
+      <Info isPro={isPro} />
       <Separator />
       <Suspense fallback={<ActivityList.Skeleton />}>
         <ActivityList data={auditLogs?.data!} />

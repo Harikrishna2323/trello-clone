@@ -8,7 +8,6 @@ export async function GET(
   { params }: { params: { cardId: string } }
 ) {
   try {
-    console.log({ params });
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {
@@ -21,8 +20,6 @@ export async function GET(
       path: "list",
       select: ["title", "description"],
     });
-
-    console.log({ card });
 
     return NextResponse.json(card);
   } catch (error) {
