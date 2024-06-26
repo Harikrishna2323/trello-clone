@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   AccordionContent,
   AccordionItem,
@@ -34,6 +35,12 @@ export const NavItem = ({
 }: NavItemProps) => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const routes = [
     {

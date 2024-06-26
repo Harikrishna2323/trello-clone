@@ -5,6 +5,7 @@ import { FormInput } from "@/components/form/form-input";
 import { updateBoard } from "@/actions/boards/update-board";
 import { useAction } from "@/hooks/use-action";
 import { toast } from "sonner";
+import { BoardType } from "@/types";
 
 interface BoardTitleFormProps {
   data: BoardType;

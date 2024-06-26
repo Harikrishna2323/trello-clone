@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ElementRef, useRef } from "react";
+import { ElementRef, useRef, useState, useEffect } from "react";
 import { useAction } from "@/hooks/use-action";
 import { createBoard } from "@/actions/boards/create-board";
 
@@ -35,6 +35,7 @@ export const FormPopover = ({
   const proModal = useProModal();
   const router = useRouter();
 
+  const [isMounted, setIsMounted] = useState(false);
   const closeRef = useRef<ElementRef<"button">>(null);
 
   const { execute, fieldErrors } = useAction(createBoard, {
@@ -54,6 +55,12 @@ export const FormPopover = ({
     const image = formData.get("image") as string;
     execute({ title, image });
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
   return (
     <Popover>
       <PopoverTrigger>{children}</PopoverTrigger>
