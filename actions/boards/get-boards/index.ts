@@ -2,6 +2,7 @@
 
 import dbConnect from "@/lib/mongodb";
 import Board from "@/models/Board";
+import { BoardType } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 
 // const handler = async (): Promise<ReturnType> => {

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { BoardTitleForm } from "./board-title-form";
 import { BoardOptions } from "./board-options";
+import { BoardType } from "@/types";
 
 interface BoardNavbarProps {
   board: BoardType;
