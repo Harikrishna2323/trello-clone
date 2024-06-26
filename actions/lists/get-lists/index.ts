@@ -1,7 +1,6 @@
 "use server";
 
 import dbConnect from "@/lib/mongodb";
-import Board from "@/models/Board";
 import List from "@/models/List";
 import { auth } from "@clerk/nextjs/server";
 import { InputType, ReturnType } from "./types";
