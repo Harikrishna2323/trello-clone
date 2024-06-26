@@ -10,7 +10,7 @@ const OrgSubscriptionSchema = new mongoose.Schema({
     unique: true,
     alias: "stripe_customer_id",
   },
-  striptSubscriptionId: {
+  stripeSubscriptionId: {
     type: String,
     unique: true,
     alias: "stripe_subscription_id",
