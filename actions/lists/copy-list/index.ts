@@ -3,7 +3,7 @@
 import { createSafeAction } from "@/lib/create-safe-action";
 import { InputType, ReturnType } from "./types";
 import { CopyListSchema } from "./schema";
-import { auth, getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import List from "@/models/List";
 import dbConnect from "@/lib/mongodb";
 import mongoose from "mongoose";
@@ -15,8 +15,6 @@ import { createAuditLog } from "@/lib/create-audit-log";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
 
-  console.log({ userId, orgId });
-
   if (!userId || !orgId) {
     return {
       error: "Unauthorized",
@@ -24,7 +22,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   }
 
   const { id, boardId } = data;
-  let list: ListType;
+  let newList: ListType = {
+    _id: id,
+    title: "",
+    boardId,
+    order: 0,
+    cards: [],
+  };
+
+  let updatedList;
 
   try {
     const mongoClient: typeof mongoose = await dbConnect();
@@ -46,36 +52,43 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     try {
       await session.withTransaction(async () => {
-        let newCards: any = [];
-        // create cards-copy for each card in lists
-        if (listToCopy?.cards?.length > 0) {
-          listToCopy.cards.forEach(async (card: CardType) => {
-            let cardCopy: CardType;
-            cardCopy = await Card.create({
-              title: card.title,
-              order: card.order,
-              description: card.description,
-              listId: list._id,
-              list: list._id,
-            });
-
-            if (cardCopy) newCards.push(cardCopy._id);
-          });
-        }
-
         //CREATE NEW LIST
-        list = await List.create({
+        newList = await List.create({
           boardId: listToCopy.boardId,
           board: listToCopy.board,
           title: `${listToCopy.title} - Copy`,
           order: newOrder,
-          cards: newCards,
+          // cards: newCards,
         });
+        // create cards-copy for each card in lists
 
-        if (list) {
+        let newCards: any = [];
+        let cardCopy;
+        if (listToCopy?.cards?.length > 0) {
+          listToCopy.cards.forEach(async (card: CardType) => {
+            cardCopy = await Card.create({
+              title: card.title,
+              order: card.order,
+              description: card.description,
+              listId: newList._id,
+              list: newList,
+            });
+
+            if (cardCopy) newCards.push(cardCopy);
+          });
+        }
+
+        // UPDATE THE NEWLY CREATED LIST's CARDS
+        let updatedList = await List.findByIdAndUpdate(
+          newList._id,
+          { $set: { cards: newCards } },
+          { new: true }
+        );
+
+        if (updatedList) {
           await createAuditLog({
-            entityId: list._id,
-            entityTitle: list.title,
+            entityId: newList._id,
+            entityTitle: newList.title,
             entityType: "LIST",
             action: "CREATE",
           });
@@ -97,7 +110,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   }
 
   revalidatePath(`/board/${boardId}`);
-  return { data: JSON.parse(JSON.stringify(list)) };
+  return { data: JSON.parse(JSON.stringify(updatedList)) };
 };
 
 export const copyList = createSafeAction(CopyListSchema, handler);
